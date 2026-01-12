@@ -6,5 +6,7 @@ const router = express.Router();
 
 router.get("/", getGigs);
 router.post("/", protect, createGig);
+router.get("/details/:id", protect, getGigById);
+
 
 export default router;

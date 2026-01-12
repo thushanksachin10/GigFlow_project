@@ -13,3 +13,15 @@ export const getGigs = async (req, res) => {
   });
   res.json(gigs);
 };
+
+export const getGigById = async (req, res) => {
+  try {
+    const gig = await Gig.findById(req.params.id);
+
+    if (!gig) return res.status(404).json({ message: "Gig not found" });
+
+    res.json(gig);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
