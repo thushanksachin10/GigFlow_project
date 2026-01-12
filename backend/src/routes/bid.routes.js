@@ -1,5 +1,5 @@
 import express from "express";
-import { createBid, getBidsForGig } from "../controllers/bid.controller.js";
+import { createBid, getBidsForGig, hireBid } from "../controllers/bid.controller.js";
 import { protect } from "../middleware/auth.js";
 
 const router = express.Router();
