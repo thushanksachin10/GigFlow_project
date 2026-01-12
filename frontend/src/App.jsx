@@ -10,7 +10,7 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <div className="p-6">
+      <div className="container mx-auto p-6">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
