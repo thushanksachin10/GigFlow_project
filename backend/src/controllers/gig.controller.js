@@ -1,7 +1,7 @@
 import Gig from "../models/Gig.js";
 
 export const createGig = async (req, res) => {
-  const gig = await Gig.create({ ...req.body, ownerId: req.user });
+  const gig = await Gig.create({ ...req.body, ownerId: req.user, clientId: req.user });
   res.json(gig);
 };
 
@@ -16,9 +16,11 @@ export const getGigs = async (req, res) => {
 
 export const getGigById = async (req, res) => {
   try {
-    const gig = await Gig.findById(req.params.id);
+    const gig = await Gig.findById(req.params.id).lean();
 
-    if (!gig) return res.status(404).json({ message: "Gig not found" });
+    if (!gig) {
+      return res.status(404).json({ message: "Gig not found" });
+    }
 
     res.json(gig);
   } catch (err) {

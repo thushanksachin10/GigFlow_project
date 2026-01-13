@@ -5,6 +5,11 @@ const gigSchema = new mongoose.Schema({
   description: String,
   budget: Number,
   ownerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  clientId: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User",
+  required: true
+},
   status: { type: String, default: "open" }
 });
 

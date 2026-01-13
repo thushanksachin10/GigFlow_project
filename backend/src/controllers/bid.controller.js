@@ -3,9 +3,21 @@ import Gig from "../models/Gig.js";
 import Bid from "../models/Bid.js";
 
 export const createBid = async (req, res) => {
-  const bid = await Bid.create({ ...req.body, freelancerId: req.user });
-  res.json(bid);
+  try {
+    const bid = await Bid.create({
+      gigId: req.body.gigId,
+      message: req.body.message,
+      amount: req.body.amount,  
+      freelancerId: req.user,
+      status: "pending",
+    });
+
+    res.json(bid);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
+
 
 export const getBidsForGig = async (req, res) => {
   const bids = await Bid.find({ gigId: req.params.gigId });

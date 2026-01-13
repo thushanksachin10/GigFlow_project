@@ -4,8 +4,10 @@ const bidSchema = new mongoose.Schema({
   gigId: { type: mongoose.Schema.Types.ObjectId, ref: "Gig" },
   freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   message: String,
-  price: Number,
+  amount: Number,
   status: { type: String, default: "pending" }
 });
 
-export default mongoose.model("Bid", bidSchema);
+const Bid = mongoose.model("Bid", bidSchema);
+
+export default Bid;
