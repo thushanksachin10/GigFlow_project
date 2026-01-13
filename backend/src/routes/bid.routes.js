@@ -4,10 +4,13 @@ import { protect } from "../middleware/auth.js";
 
 const router = express.Router();
 
+// Freelancer creates a bid
 router.post("/", protect, createBid);
-router.get("/:gigId", protect, getBidsForGig);
 
+// Get bids for ONE gig
+router.get("/gig/:gigId", protect, getBidsForGig);
+
+// Client hires a freelancer
 router.patch("/:bidId/hire", protect, hireBid);
-
 
 export default router;

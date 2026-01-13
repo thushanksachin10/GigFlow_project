@@ -4,9 +4,13 @@ import { protect } from "../middleware/auth.js";
 
 const router = express.Router();
 
+// PUBLIC: get all gigs
 router.get("/", getGigs);
-router.post("/", protect, createGig);
-router.get("/details/:id", protect, getGigById);
 
+// PUBLIC: get details of one gig
+router.get("/details/:id", getGigById);
+
+// PROTECTED: create gig
+router.post("/", protect, createGig);
 
 export default router;

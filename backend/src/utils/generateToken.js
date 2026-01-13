@@ -5,9 +5,9 @@ export default function generateToken(res, userId) {
     expiresIn: "7d",
   });
 
-  res.cookie("token", token, {
+  res.cookie("jwt", token, {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "lax",
     secure: false,
   });
 }

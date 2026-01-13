@@ -1,13 +1,26 @@
 import mongoose from "mongoose";
 
-const bidSchema = new mongoose.Schema({
-  gigId: { type: mongoose.Schema.Types.ObjectId, ref: "Gig" },
-  freelancerId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  message: String,
-  amount: Number,
-  status: { type: String, default: "pending" }
-});
+const bidSchema = new mongoose.Schema(
+  {
+    gigId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Gig",
+      required: true,
+    },
+    freelancerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    message: { type: String, required: true },
+    amount: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ["pending", "hired"],
+      default: "pending",
+    },
+  },
+  { timestamps: true }
+);
 
-const Bid = mongoose.model("Bid", bidSchema);
-
-export default Bid;
+export default mongoose.model("Bid", bidSchema);

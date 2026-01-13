@@ -1,58 +1,74 @@
-import mongoose from "mongoose";
-import Gig from "../models/Gig.js";
 import Bid from "../models/Bid.js";
+import Gig from "../models/Gig.js";
 
+// CREATE BID (Freelancers only)
 export const createBid = async (req, res) => {
   try {
+    const { gigId, message, amount } = req.body;
+
+    if (req.user.role !== "freelancer") {
+      return res.status(403).json({ message: "Only freelancers can bid" });
+    }
+
     const bid = await Bid.create({
-      gigId: req.body.gigId,
-      message: req.body.message,
-      amount: req.body.amount,  
-      freelancerId: req.user,
-      status: "pending",
+      gigId,
+      freelancerId: req.user.id,
+      message,
+      amount,
     });
 
-    res.json(bid);
+    const populated = await bid.populate("freelancerId", "name email");
+
+    res.status(201).json(populated);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("CreateBid Error:", err.message);
+    res.status(500).json({ message: "Failed to create bid" });
   }
 };
 
-
+// GET BIDS FOR SPECIFIC GIG
 export const getBidsForGig = async (req, res) => {
-  const bids = await Bid.find({ gigId: req.params.gigId });
-  res.json(bids);
+  try {
+    const gigId = req.params.gigId;
+
+    const bids = await Bid.find({ gigId })
+      .populate("freelancerId", "name email")
+      .sort({ createdAt: -1 });
+
+    res.json(bids);
+  } catch (err) {
+    console.error("Fetch Bids Error:", err.message);
+    res.status(500).json({ message: "Failed to fetch bids" });
+  }
 };
 
+// HIRE FREELANCER (Client Only)
 export const hireBid = async (req, res) => {
-  const { bidId } = req.params;
-
-  const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
-    const bid = await Bid.findById(bidId).session(session);
-    if (!bid) throw new Error("Bid not found");
+    const bidId = req.params.bidId;
 
-    const gig = await Gig.findById(bid.gigId).session(session);
-    if (gig.status !== "open") throw new Error("Gig already assigned");
+    // Find bid
+    const bid = await Bid.findById(bidId);
+    if (!bid) return res.status(404).json({ message: "Bid not found" });
 
-    gig.status = "assigned";
-    await gig.save({ session });
+    // Make sure the requester is the gig owner
+    const gig = await Gig.findById(bid.gigId);
 
+    if (!gig) return res.status(404).json({ message: "Gig not found" });
+
+    if (gig.clientId.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized to hire" });
+    }
+
+    // Update bid status
     bid.status = "hired";
-    await bid.save({ session });
+    await bid.save();
 
-    await Bid.updateMany(
-      { gigId: gig._id, _id: { $ne: bidId } },
-      { $set: { status: "rejected" } },
-      { session }
-    );
+    const populated = await bid.populate("freelancerId", "name email");
 
-    await session.commitTransaction();
-    res.json({ message: "Hired successfully" });
+    res.json(populated);
   } catch (err) {
-    await session.abortTransaction();
-    res.status(400).json({ error: err.message });
+    console.error("HireBid Error:", err.message);
+    res.status(500).json({ message: "Failed to hire freelancer" });
   }
 };
