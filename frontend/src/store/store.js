@@ -9,4 +9,9 @@ export const store = configureStore({
     gigs: gigReducer,
     bids: bidReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
+  devTools: import.meta.env.MODE !== "production",
 });

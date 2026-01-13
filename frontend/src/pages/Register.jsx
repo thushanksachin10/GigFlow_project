@@ -7,20 +7,26 @@ export default function Register() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [data, setData] = useState({ name: "", email: "", password: "" });
+  const [data, setData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    role: "",
+  });
+
   const [loading, setLoading] = useState(false);
 
   const submit = async () => {
-    if (!data.name || !data.email || !data.password) {
-      alert("Please fill all fields");
+    if (!data.name || !data.email || !data.password || !data.role) {
+      alert("Please fill all fields including Role");
       return;
     }
 
     setLoading(true);
-    await dispatch(register(data));   // dispatch API call
+    await dispatch(register(data));
     setLoading(false);
 
-    navigate("/login");   // redirect to login
+    navigate("/login");
   };
 
   return (
@@ -53,6 +59,17 @@ export default function Register() {
         placeholder="Enter Password"
         onChange={(e) => setData({ ...data, password: e.target.value })}
       />
+
+      {/* ROLE SELECT (THIS IS THE IMPORTANT PART) */}
+      <label className="block font-semibold mt-4 mb-1">Select Role</label>
+      <select
+        className="input mt-2"
+        onChange={(e) => setData({ ...data, role: e.target.value })}
+      >
+        <option value="">Choose role</option>
+        <option value="client">Client</option>
+        <option value="freelancer">Freelancer</option>
+      </select>
 
       {/* Submit button */}
       <button

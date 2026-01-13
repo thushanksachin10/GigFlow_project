@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../store/authSlice";
 import { useNavigate } from "react-router-dom";
@@ -7,10 +7,16 @@ export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const user = useSelector((s) => s.auth.user);
+
   const [data, setData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
-  const user = useSelector((s) => s.auth.user);
+  // Auto redirect if already logged in
+  useEffect(() => {
+    if (user?.role === "client") navigate("/create-gig");
+    if (user?.role === "freelancer") navigate("/");
+  }, [user, navigate]);
 
   const submit = async () => {
     if (!data.email || !data.password) {
@@ -19,11 +25,17 @@ export default function Login() {
     }
 
     setLoading(true);
-    await dispatch(login(data));
+    const result = await dispatch(login(data)); // login request
     setLoading(false);
 
-    // Redirect to homepage after login
-    navigate("/");
+    const loggedInUser = result.payload;
+
+    // role-based redirect
+    if (loggedInUser?.role === "client") {
+      navigate("/create-gig");
+    } else {
+      navigate("/");
+    }
   };
 
   return (
@@ -49,7 +61,7 @@ export default function Login() {
         onChange={(e) => setData({ ...data, password: e.target.value })}
       />
 
-      {/* Submit button */}
+      {/* Submit */}
       <button
         className="btn bg-blue-600 text-white w-full mt-6 py-3 text-lg font-semibold rounded-lg shadow hover:bg-blue-700 transition"
         onClick={submit}
@@ -60,7 +72,7 @@ export default function Login() {
 
       {/* Link to register */}
       <p className="text-center mt-4 text-sm">
-        Don't have an account?{" "}
+        Don’t have an account?{" "}
         <span
           className="text-blue-600 font-semibold cursor-pointer"
           onClick={() => navigate("/register")}

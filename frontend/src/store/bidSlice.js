@@ -6,19 +6,19 @@ export const createBid = createAsyncThunk("bids/create", async (data) => {
   const res = await axiosClient.post("/bids", {
     gigId: data.gigId,
     message: data.message,
-    amount: Number(data.amount), // ensure numeric
+    amount: Number(data.amount),
   });
   return res.data;
 });
 
-// GET BIDS FOR GIG
+// GET BIDS OF A GIG
 export const fetchBids = createAsyncThunk("bids/fetch", async (gigId) => {
-  const res = await axiosClient.get(`/bids/${gigId}`);
+  const res = await axiosClient.get(`/bids/gig/${gigId}`);
   return res.data;
 });
 
 // HIRE A BID
-export const hireBid = createAsyncThunk("bids/hire", async (bidId) => {
+export const hireBid = createAsyncThunk("bids/hire", async ({ bidId }) => {
   const res = await axiosClient.patch(`/bids/${bidId}/hire`);
   return res.data;
 });
@@ -39,8 +39,13 @@ const bidSlice = createSlice({
       state.list.push(action.payload);
     });
 
-    builder.addCase(hireBid.fulfilled, () => {
-      // refresh happens externally
+    builder.addCase(hireBid.fulfilled, (state, action) => {
+      const updated = action.payload;
+
+      // Replace hired bid in list
+      state.list = state.list.map((b) =>
+        b._id === updated._id ? updated : b
+      );
     });
   },
 });
