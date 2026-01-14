@@ -186,3 +186,9 @@ npm run dev
 - Secure cookie-based JWT system  
 - Role-based rendering handled on frontend  
 - Fully functional MERN application  
+
+📸 Screenshots
+
+Below are visual previews of GigFlow’s UI.  
+
+attached in mail or github or ill provide link for it
