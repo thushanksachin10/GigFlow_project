@@ -92,7 +92,7 @@ gigflow/
 
 ### 🔹 Clone the Repository
 
-git clone https://github.com/YOUR_USERNAME/gigflow.git
+git clone [https://github.com/YOUR_USERNAME/gigflow.git](https://github.com/thushanksachin10/GigFlow_project/tree/main)
 
 cd gigflow
 
